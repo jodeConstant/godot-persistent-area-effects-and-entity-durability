@@ -1,0 +1,5 @@
+# SCsub, copied from tutorial / explanation, https://docs.godotengine.org/en/stable/contributing/development/core_and_modules/custom_modules_in_cpp.html
+
+Import('env')
+
+env.add_source_files(env.modules_sources, "*.cpp") # Add all cpp files to the build
