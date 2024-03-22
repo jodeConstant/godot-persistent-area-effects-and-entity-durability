@@ -29,7 +29,15 @@ protected:
     static void _bind_methods();
 
 public:
-    enum DamageType { Impact, Cut, Pierce, Electric, Heat, Chemical };
+    /* 
+        WARNING: do not set enum values explicitly!
+        If new types are added, make sure to also add
+            - getter and setter functions
+            - a corresponding property (in .cpp file)
+        UNBLOCKABLE should remain as the last, as it marks the end of the list
+    */
+    enum DamageType { Impact, Cut, Pierce, Electric, Heat, Chemical, 
+        UNBLOCKABLE };
 
     void set_impact_defense(const Vector2 &value);
     Vector2 get_impact_defense();
@@ -49,6 +57,8 @@ public:
     void set_chemical_defense(const Vector2 &value);
     Vector2 get_chemical_defense();
 
+
+    float reduced_damage(float damage, DamageType type);
     
     Durability() : Resource() {
         negations[0] = Vector2(0, 0);

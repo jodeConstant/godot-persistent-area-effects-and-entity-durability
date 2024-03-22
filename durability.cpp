@@ -1,5 +1,13 @@
 #include "durability.h"
 
+float Durability::reduced_damage(float damage, DamageType type) {
+	if ((type >= 0) && (type < UNBLOCKABLE)) {
+		damage -= negations[type].x;
+		damage -= damage * negations[type].y;
+	}
+	return damage;
+}
+
 void Durability::set_impact_defense(const Vector2 &value) {
 	negations[0] = value;
 }
