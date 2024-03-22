@@ -1,7 +1,9 @@
 #ifndef DAMAGE_NEGATION_H
 #define DAMAGE_NEGATION_H
 
+#include "core/io/file_access.h"
 #include "core/io/resource.h"
+#include "core/io/resource_loader.h"
 
 /*
     The point of making this a resource is the option to share the same data between multiple entities
@@ -22,6 +24,7 @@ class Durability : public Resource
 {
 private:
     GDCLASS(Durability, Resource);
+    OBJ_SAVE_TYPE(Durability);
 
     Vector2 negations[6];
 
@@ -59,30 +62,15 @@ public:
 
 
     float reduced_damage(float damage, DamageType type);
-    
-    Durability() : Resource() {
-        negations[0] = Vector2(0, 0);
-        negations[1] = Vector2(0, 0);
-        negations[2] = Vector2(0, 0);
-        negations[3] = Vector2(0, 0);
-        negations[4] = Vector2(0, 0);
-        negations[5] = Vector2(0, 0);
-    }
 
+    Durability();
     Durability( float impact_t,   float impact_r, 
-                    float cut_t,      float cut_r, 
-                    float pierce_t,   float pierce_r, 
-                    float electric_t, float electric_r, 
-                    float heat_t,     float heat_r, 
-                    float chemical_t, float chemical_r) : Resource()
-    {
-        negations[0] = Vector2(impact_t,    impact_r);
-        negations[1] = Vector2(cut_t,       cut_r);
-        negations[2] = Vector2(pierce_t,    pierce_r);
-        negations[3] = Vector2(electric_t,  electric_r);
-        negations[4] = Vector2(heat_t,      heat_r);
-        negations[5] = Vector2(chemical_t,  chemical_r);
-    }
+                float cut_t,      float cut_r, 
+                float pierce_t,   float pierce_r, 
+                float electric_t, float electric_r, 
+                float heat_t,     float heat_r, 
+                float chemical_t, float chemical_r);
+
 };
 
 VARIANT_ENUM_CAST(Durability::DamageType);
