@@ -8,8 +8,8 @@ The purpose of this module is to add extended area effect options and entity dur
 The Durability resource class is not yet functional. Current issues:
 - Durability resources are not saved, reverting to 0 values on reload
   - TODO: Write a special resource file save and load class(es) and functions
-- `reduced_damage` function does not work, returns unmodified value
-  - May be related to save and load issues
+- `reduced_damage` function does not work if Durability resource was set in editor, returns unmodified value
+  - creating a new resource object in script seems to work, resulting in a functional Durability object
 
 Made for version 4.2, not tested with other versions. The contents should be placed in modules folder, see [Custom Godot modules in C++] (https://docs.godotengine.org/en/stable/contributing/development/core_and_modules/custom_modules_in_cpp.html)
 Godot license: https://godotengine.org/license/
