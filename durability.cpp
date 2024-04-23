@@ -1,60 +1,160 @@
 #include "durability.h"
 
-float Durability::reduced_damage(float damage, DamageType type) {
-	if ((type >= 0) && (type < UNBLOCKABLE)) {
-		damage -= negations[type].x;
-		damage -= damage * negations[type].y;
-	}
-	return damage;
-}
-
 void Durability::set_impact_defense(const Vector2 &value) {
+	//impact_negation = value;
 	negations[0] = value;
 }
 
 Vector2 Durability::get_impact_defense() {
+	//return impact_negation;
 	return negations[0];
 }
 
 void Durability::set_cut_defense(const Vector2 &value) {
+	//cut_negation = value;
 	negations[1] = value;
 }
 
 Vector2 Durability::get_cut_defense() {
+	//return cut_negation;
 	return negations[1];
 }
 
 void Durability::set_pierce_defense(const Vector2 &value) {
+	//pierce_negation = value;
 	negations[2] = value;
 }
 
 Vector2 Durability::get_pierce_defense() {
+	//return pierce_negation;
 	return negations[2];
 }
 
 void Durability::set_electric_defense(const Vector2 &value) {
+	//electric_negation = value;
 	negations[3] = value;
 }
 
 Vector2 Durability::get_electric_defense() {
+	//return electric_negation;
 	return negations[3];
 }
 
 void Durability::set_heat_defense(const Vector2 &value) {
+	//heat_negation = value;
 	negations[4] = value;
 }
 
 Vector2 Durability::get_heat_defense() {
+	//return heat_negation;
 	return negations[4];
 }
 
 void Durability::set_chemical_defense(const Vector2 &value) {
+	//chemical_negation = value;
 	negations[5] = value;
 }
 
 Vector2 Durability::get_chemical_defense() {
+	//return chemical_negation;
 	return negations[5];
 }
+
+
+float Durability::reduced_damage(float damage, DamageType type) {
+	damage -= negations[type].x;
+	damage -= damage * negations[type].y;
+
+	return damage;
+
+	/*
+	Vector2 *defense;
+	switch (type)
+	{
+	case Impact:
+		defense = &impact_negation;
+		break;
+	
+	case Cut:
+		defense = &cut_negation;
+		break;
+	
+	case Pierce:
+		defense = &pierce_negation;
+		break;
+	
+	case Electric:
+		defense = &electric_negation;
+		break;
+	
+	case Heat:
+		defense = &heat_negation;
+		break;
+	
+	case Chemical:
+		defense = &chemical_negation;
+		break;
+	
+	default:
+		return damage;
+	}
+
+	damage -= defense->x;
+	damage -= damage * (defense->y);
+	*/
+}
+
+Error Durability::load_file(const String &p_path) {
+	// template:
+
+	Error error;
+	Ref<FileAccess> file = FileAccess::open(p_path, FileAccess::READ, &error);
+	if (error != OK) {
+			if (file.is_valid()) {
+					file->close();
+			}
+			return error;
+	}
+
+	// file data type check
+	if (file->get_8() != (uint8_t)EntityFileType::Durability) {
+		return ERR_INVALID_DATA;
+	}
+	else {
+		// load actual data:
+		for (int i = 0; (i < 6); i++)
+		{
+			negations[i].x = file->get_float();
+			negations[i].y = file->get_float();
+		}
+		return OK;
+	}
+}
+
+Error Durability::save_file(const String &p_path, const /*RES*/Ref<Durability> &p_resource) {
+	// template:
+
+	Error error;
+	Ref<FileAccess> file = FileAccess::open(p_path, FileAccess::WRITE, &error);
+	if (error != OK) {
+			if (file.is_valid()) {
+					file->close();
+			}
+			return error;
+	}
+
+	// save data here:
+	file->store_8((uint8_t)EntityFileType::Durability);
+	for (int i = 0; (i < 6); i++)
+	{
+		file->store_float(negations[i].x);
+		file->store_float(negations[i].y);
+	}
+	
+	file->close();
+	return OK;
+}
+
 
 Durability::Durability() : Resource() {
 	/*
