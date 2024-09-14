@@ -1,4 +1,4 @@
-#include "modules/entityeffects/areaeffect3d.h"
+#include "areaeffect3d.h"
 
 /*
     TODO:
@@ -10,7 +10,7 @@ AreaEffect3D::AreaEffect3D() : Area3D(), a_length(20), first_free_slot(0) {
 	affected.resize(a_length);
     for (int64_t i = 0; i < a_length; i++)
     {
-        affected.set(i, NULL);
+        affected.set(i, 0);
     }
     
 }
@@ -50,7 +50,7 @@ bool AreaEffect3D::remove_node(Variant node) {
             //affected[i - 1] = affected[i];
             affected.set(i - 1, affected[i]);
         }
-        //affected.set(i - 1, NULL);
+        //affected.set(i - 1, 0);
     }
     return found_at;
 }
@@ -58,7 +58,7 @@ bool AreaEffect3D::remove_node(Variant node) {
 void AreaEffect3D::clear_affected() {
     for (int64_t i = 0; i < a_length; i++) {
         //affected[i] = 0;
-        affected.set(i, NULL);
+        affected.set(i, 0);
     }
     first_free_slot = 0;
 }

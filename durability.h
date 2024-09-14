@@ -6,7 +6,6 @@
 #include "core/io/resource_loader.h"
 #include "core/io/file_access.h"
 #include "core/variant/variant_parser.h"
-#include "shared_entity_data.h"
 
 /*
     The point of making this a resource is the option to share the same data between multiple entities
@@ -23,13 +22,15 @@
     based on whether they are, for example, flexible or brittle, etc.
 */
 
+#define NUMBER_OF_DMG_TYPES 6
+
 class Durability : public Resource
 {
 private:
     GDCLASS(Durability, Resource);
     //OBJ_SAVE_TYPE(Durability);
 
-    Vector2 negations[6];
+    Vector2 negations[NUMBER_OF_DMG_TYPES];
     /*
     Vector2 impact_negation;
     Vector2 cut_negation;
@@ -48,9 +49,9 @@ public:
         If new types are added, make sure to also add
             - getter and setter functions
             - a corresponding properties (in .cpp files)
+        ALTERNATIVELY: use bit masks? 1, 2, 4, 8 etc. allows for combined types
     */
-    enum DamageType { Impact, Cut, Pierce, Electric, Heat, Chemical, 
-        UNBLOCKABLE };
+    enum DamageType { Impact, Cut, Pierce, Electric, Heat, Chemical, NONE };// 6 types & 'NONE' = number of types = array length
 
     void set_impact_defense(const Vector2 &value);
     Vector2 get_impact_defense();
@@ -72,20 +73,7 @@ public:
 
     float reduced_damage(float damage, DamageType type);
 
-
-    Error load_file(const String &p_path);
-	Error save_file(const String &p_path, const /*RES*/Ref<Durability> &p_resource);
-
     Durability();
-    /*
-    Durability( float impact_t,   float impact_r, 
-                float cut_t,      float cut_r, 
-                float pierce_t,   float pierce_r, 
-                float electric_t, float electric_r, 
-                float heat_t,     float heat_r, 
-                float chemical_t, float chemical_r);
-    */
-
 };
 
 VARIANT_ENUM_CAST(Durability::DamageType);
