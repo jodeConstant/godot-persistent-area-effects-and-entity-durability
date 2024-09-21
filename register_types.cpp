@@ -16,7 +16,7 @@ void initialize_entityeffects_module(ModuleInitializationLevel p_level) {
 
 	ClassDB::register_class<StaticDamageable3D>();
 	ClassDB::register_class<AnimatableDamageable3D>();
-	ClassDB::register_class<Entity3D>();
+	ClassDB::register_class<Actor3D>();
 }
 
 void uninitialize_entityeffects_module(ModuleInitializationLevel p_level) {

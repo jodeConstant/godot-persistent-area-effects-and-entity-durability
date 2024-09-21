@@ -24,20 +24,20 @@ float StaticDamageable3D::heal(float amount) {
 	return amount;
 }
 
-void StaticDamageable3D::set_HP_MAX(float value) {
+void StaticDamageable3D::set_HP_max(float value) {
 	if (value >= 1)
 		HP_MAX = value;
 }
 
-float StaticDamageable3D::get_HP_MAX() {
+float StaticDamageable3D::get_HP_max() {
 	return HP_MAX;
 }
 
-void StaticDamageable3D::set_HP(float value) {
+void StaticDamageable3D::set_HP_current(float value) {
 	HP = value;
 }
 
-float StaticDamageable3D::get_HP() {
+float StaticDamageable3D::get_HP_current() {
 	return HP;
 }
 
@@ -53,11 +53,11 @@ void StaticDamageable3D::set_durability(const Ref<Durability> &p_durability) {
 
 
 void StaticDamageable3D::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("set_HP_MAX", "value"), &StaticDamageable3D::set_HP_MAX);
-	ClassDB::bind_method(D_METHOD("get_HP_MAX"), &StaticDamageable3D::get_HP_MAX);
+	ClassDB::bind_method(D_METHOD("set_HP_max", "value"), &StaticDamageable3D::set_HP_max);
+	ClassDB::bind_method(D_METHOD("get_HP_max"), &StaticDamageable3D::get_HP_max);
 
-	ClassDB::bind_method(D_METHOD("set_HP", "value"), &StaticDamageable3D::set_HP);
-	ClassDB::bind_method(D_METHOD("get_HP"), &StaticDamageable3D::get_HP);
+	ClassDB::bind_method(D_METHOD("set_HP", "value"), &StaticDamageable3D::set_HP_current);
+	ClassDB::bind_method(D_METHOD("get_HP"), &StaticDamageable3D::get_HP_current);
 
 	ClassDB::bind_method(D_METHOD("hit", "amount", "type"), &StaticDamageable3D::hit);
 	
@@ -68,6 +68,10 @@ void StaticDamageable3D::_bind_methods() {
 
 	ADD_GROUP("Durability", "");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "durability", PROPERTY_HINT_RESOURCE_TYPE, "Durability"), "set_durability", "get_durability");
+
+	ADD_GROUP("Stats", "");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "hp max", PROPERTY_HINT_RANGE, "1,max float value"), "set_HP_max", "get_HP_max");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "hp current", PROPERTY_HINT_RANGE, "min float value,max float value"), "set_HP", "get_HP");
 }
 
 
@@ -97,20 +101,20 @@ float AnimatableDamageable3D::heal(float amount) {
 	return amount;
 }
 
-void AnimatableDamageable3D::set_HP_MAX(float value) {
+void AnimatableDamageable3D::set_HP_max(float value) {
 	if (value >= 1)
 		HP_MAX = value;
 }
 
-float AnimatableDamageable3D::get_HP_MAX() {
+float AnimatableDamageable3D::get_HP_max() {
 	return HP_MAX;
 }
 
-void AnimatableDamageable3D::set_HP(float value) {
+void AnimatableDamageable3D::set_HP_current(float value) {
 	HP = value;
 }
 
-float AnimatableDamageable3D::get_HP() {
+float AnimatableDamageable3D::get_HP_current() {
 	return HP;
 }
 
@@ -126,11 +130,11 @@ void AnimatableDamageable3D::set_durability(const Ref<Durability> &p_durability)
 
 
 void AnimatableDamageable3D::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("set_HP_MAX", "value"), &AnimatableDamageable3D::set_HP_MAX);
-	ClassDB::bind_method(D_METHOD("get_HP_MAX"), &AnimatableDamageable3D::get_HP_MAX);
+	ClassDB::bind_method(D_METHOD("set_HP_max", "value"), &AnimatableDamageable3D::set_HP_max);
+	ClassDB::bind_method(D_METHOD("get_HP_max"), &AnimatableDamageable3D::get_HP_max);
 
-	ClassDB::bind_method(D_METHOD("set_HP", "value"), &AnimatableDamageable3D::set_HP);
-	ClassDB::bind_method(D_METHOD("get_HP"), &AnimatableDamageable3D::get_HP);
+	ClassDB::bind_method(D_METHOD("set_HP", "value"), &AnimatableDamageable3D::set_HP_current);
+	ClassDB::bind_method(D_METHOD("get_HP"), &AnimatableDamageable3D::get_HP_current);
 
 	ClassDB::bind_method(D_METHOD("hit", "amount", "type"), &AnimatableDamageable3D::hit);
 	
@@ -141,6 +145,10 @@ void AnimatableDamageable3D::_bind_methods() {
 
 	ADD_GROUP("Durability", "");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "durability", PROPERTY_HINT_RESOURCE_TYPE, "Durability"), "set_durability", "get_durability");
+
+	ADD_GROUP("Stats", "");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "hp max", PROPERTY_HINT_RANGE, "1,max float value"), "set_HP_max", "get_HP_max");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "hp current", PROPERTY_HINT_RANGE, "min float value,max float value"), "set_HP", "get_HP");
 }
 
 
@@ -149,7 +157,7 @@ void AnimatableDamageable3D::_bind_methods() {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-float Entity3D::hit(float amount, Durability::DamageType type) {
+float Actor3D::hit(float amount, Durability::DamageType type) {
 	float damage_received = (durability.is_valid() ? durability->reduced_damage(amount, type) : amount);
 	HP -= damage_received;
 	if (HP <= 0) {
@@ -157,7 +165,7 @@ float Entity3D::hit(float amount, Durability::DamageType type) {
 	}
 }
 
-float Entity3D::heal(float amount) {
+float Actor3D::heal(float amount) {
 	HP += amount;
 	/*
 		calculate and return the difference:
@@ -166,51 +174,56 @@ float Entity3D::heal(float amount) {
 			positive means overheal
 		can use that for something later
 	*/
-	amount = HP - HP_MAX;
+	amount = HP - HP_MAX_DERIVED;
 	return amount;
 }
 
-void Entity3D::set_HP_MAX(float value) {
+void Actor3D::set_HP_max(float value) {
 	if (value >= 1)
-		HP_MAX = value;
+		HP_MAX_BASE = value;
 }
 
-float Entity3D::get_HP_MAX() {
-	return HP_MAX;
+float Actor3D::get_HP_max() {
+	return HP_MAX_BASE;
 }
 
-void Entity3D::set_HP(float value) {
+void Actor3D::set_HP_current(float value) {
 	HP = value;
 }
 
-float Entity3D::get_HP() {
+float Actor3D::get_HP_current() {
 	return HP;
 }
 
-Ref<Durability> Entity3D::get_durability() const {
+Ref<Durability> Actor3D::get_durability() const {
 	return durability;
 }
 
-void Entity3D::set_durability(const Ref<Durability> &p_durability) {
+void Actor3D::set_durability(const Ref<Durability> &p_durability) {
 	if (p_durability == durability)
 		return;
 	durability = p_durability;
 }
 
-void Entity3D::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("set_HP_MAX", "value"), &Entity3D::set_HP_MAX);
-	ClassDB::bind_method(D_METHOD("get_HP_MAX"), &Entity3D::get_HP_MAX);
+void Actor3D::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_HP_max", "value"), &Actor3D::set_HP_max);
+	ClassDB::bind_method(D_METHOD("get_HP_max"), &Actor3D::get_HP_max);
 
-	ClassDB::bind_method(D_METHOD("set_HP", "value"), &Entity3D::set_HP);
-	ClassDB::bind_method(D_METHOD("get_HP"), &Entity3D::get_HP);
+	ClassDB::bind_method(D_METHOD("set_HP", "value"), &Actor3D::set_HP_current);
+	ClassDB::bind_method(D_METHOD("get_HP"), &Actor3D::get_HP_current);
 
-	ClassDB::bind_method(D_METHOD("hit", "amount", "type"), &Entity3D::hit);
+	ClassDB::bind_method(D_METHOD("hit", "amount", "type"), &Actor3D::hit);
 	
-	ClassDB::bind_method(D_METHOD("heal", "amount"), &Entity3D::heal);
+	ClassDB::bind_method(D_METHOD("heal", "amount"), &Actor3D::heal);
 
-	ClassDB::bind_method(D_METHOD("set_durability", "durability"), &Entity3D::set_durability);
-	ClassDB::bind_method(D_METHOD("get_durability"), &Entity3D::get_durability);
+	ClassDB::bind_method(D_METHOD("set_durability", "durability"), &Actor3D::set_durability);
+	ClassDB::bind_method(D_METHOD("get_durability"), &Actor3D::get_durability);
 
 	ADD_GROUP("Durability", "");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "durability", PROPERTY_HINT_RESOURCE_TYPE, "Durability"), "set_durability", "get_durability");
+
+	ADD_GROUP("Stats", "");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "hp max", PROPERTY_HINT_RANGE, "1,max float value"), "set_HP_max", "get_HP_max");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "hp current", PROPERTY_HINT_RANGE, "min float value,max float value"), "set_HP", "get_HP");
+
 }

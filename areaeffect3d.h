@@ -3,6 +3,8 @@
 
 #include "../../scene/3d/physics/area_3d.h"
 #include "../../scene/3d/physics/physics_body_3d.h"
+#include "core/templates/pooled_list.h"
+#include "core/templates/local_vector.h"
 
 /*
     TODO:
@@ -15,20 +17,20 @@ class AreaEffect3D : public Area3D
     private:
         GDCLASS(AreaEffect3D, Area3D);
         
-        Vector</*Ref<PhysicsBody3D>*/Variant> affected;
-        int64_t a_length;
-        int64_t first_free_slot;
+        //pooled array: reserve on construction, (probably) never call clear() method
+        LocalVector<Variant, uint32_t, false, true> affected;
     
     protected:
 	    static void _bind_methods();
     
     public:
-        AreaEffect3D();
+        AreaEffect3D(int max_affected);
+        AreaEffect3D() : AreaEffect3D(20) {};
         ~AreaEffect3D();
 
-        bool has_node(Variant node);
-        bool add_node(Variant node);
-        bool remove_node(Variant node);
+        bool has_affected_node(const Variant &node/*const Ref<PhysicsBody3D> &node*/);
+        bool add_affected_node(Variant node/*const Ref<PhysicsBody3D> &node*/);
+        bool remove_affected_node(const Variant &node/*const Ref<PhysicsBody3D> &node*/);
         void clear_affected();
 };
 
