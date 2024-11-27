@@ -22,36 +22,26 @@
     based on whether they are, for example, flexible or brittle, etc.
 */
 
-#define NUMBER_OF_DMG_TYPES 6
+#define DMG_TYPE_MASK 0b1111// max 16 types
+#define HALF_DAMAGE_THRESHOLD 100.0f
 
 class Durability : public Resource
 {
 private:
     GDCLASS(Durability, Resource);
-    //OBJ_SAVE_TYPE(Durability);
-
-    Vector2 negations[NUMBER_OF_DMG_TYPES];
-    /*
-    Vector2 impact_negation;
-    Vector2 cut_negation;
-    Vector2 pierce_negation;
-    Vector2 electric_negation;
-    Vector2 heat_negation;
-    Vector2 chemical_negation;
-    */
 
 protected:
     static void _bind_methods();
 
 public:
     /* 
-        WARNING: do not set enum values explicitly!
+        NOTE: types correspond to [array index - 1] (or just array index, if NONE is removed or movet to end?)
         If new types are added, make sure to also add
             - getter and setter functions
             - a corresponding properties (in .cpp files)
-        ALTERNATIVELY: use bit masks? 1, 2, 4, 8 etc. allows for combined types
     */
-    enum DamageType { Impact, Cut, Pierce, Electric, Heat, Chemical, NONE };// 6 types & 'NONE' = number of types = array length
+    enum DamageType : int { DMG_TYPE_NONE, Impact, Cut, Pierce, Electric, Heat, Chemical, 
+        DMG_TYPE_ENUM_END };// keep this is last enum
 
     void set_impact_defense(const Vector2 &value);
     Vector2 get_impact_defense();
@@ -71,9 +61,13 @@ public:
     void set_chemical_defense(const Vector2 &value);
     Vector2 get_chemical_defense();
 
-    float reduced_damage(float damage, DamageType type);
+    float reduced_damage(float damage, int type);
 
     Durability();
+
+private:
+    Vector2 negations[DMG_TYPE_ENUM_END - 1];
+
 };
 
 VARIANT_ENUM_CAST(Durability::DamageType);

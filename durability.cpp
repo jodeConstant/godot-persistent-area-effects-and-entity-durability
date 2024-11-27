@@ -60,10 +60,12 @@ Vector2 Durability::get_chemical_defense() {
 	return negations[5];
 }
 
-float Durability::reduced_damage(float damage, DamageType type) {
-	if ((type > 0) && (type < NUMBER_OF_DMG_TYPES)) {
-		damage -= negations[type].x;
-		damage -= damage * negations[type].y;
+float Durability::reduced_damage(float damage, int type) {
+	if ((type > DMG_TYPE_NONE) && (type < DMG_TYPE_ENUM_END)) {
+		damage -= negations[type - 1].x;
+		
+		// if HALF_DAMAGE_THRESHOLD = 100, gain +1 effective HP % for each 1 point of multiplicative defense value, 100 points = double effective HP
+		damage *= HALF_DAMAGE_THRESHOLD / (HALF_DAMAGE_THRESHOLD + negations[type - 1].y);
 	}
 	// Optional TODO: switch statement for special reduction formulas
 
@@ -102,11 +104,12 @@ void Durability::_bind_methods()
     ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "heat_defense", PROPERTY_HINT_NONE, ""), "set_heat_defense", "get_heat_defense");
     ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "chemical_defense", PROPERTY_HINT_NONE, ""), "set_chemical_defense", "get_chemical_defense");
 
+    BIND_ENUM_CONSTANT(DMG_TYPE_NONE);
     BIND_ENUM_CONSTANT(Impact);
     BIND_ENUM_CONSTANT(Cut);
     BIND_ENUM_CONSTANT(Pierce);
     BIND_ENUM_CONSTANT(Electric);
     BIND_ENUM_CONSTANT(Heat);
     BIND_ENUM_CONSTANT(Chemical);
-    BIND_ENUM_CONSTANT(NONE);
+    BIND_ENUM_CONSTANT(DMG_TYPE_ENUM_END);
 }
